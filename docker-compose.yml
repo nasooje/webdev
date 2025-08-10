@@ -1,0 +1,25 @@
+version: '3'
+services:
+  web:
+    container_name: icdx-web
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      - db
+    volumes:
+      - ./src/:/var/www/html/
+    ports:
+      - 8888:80
+  db:
+    container_name: mysql-php
+    image: mysql:8.0
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    volumes:
+      - ./db/:/docker-entrypoint-initdb.d
+    environment:
+      MYSQL_DATABASE: geumgang
+      MYSQL_ROOT_PASSWORD: password
+      TZ: Asia/Seoul
+
