@@ -1,0 +1,92 @@
+version: '3.3'
+
+services:
+    panel:
+        build: ./panel
+        ports:
+            - "8000:80"
+        networks:
+            intra:
+                ipv4_address: 172.26.0.2
+    panel_db:
+        build: ./panel_db
+        command: --default-authentication-plugin=mysql_native_password
+        restart: always
+        environment:
+          MYSQL_ROOT_PASSWORD: system_root!#24
+          MYSQL_DATABASE: system
+          MYSQL_USER: system
+          MYSQL_PASSWORD: system!#24
+        volumes:
+          - ./panel_db/init.sql:/docker-entrypoint-initdb.d/init.sql
+          - ./panel_db/config/my.cnf:/etc/mysql/conf.d/my.cnf
+        networks:
+            intra:
+                ipv4_address: 172.26.0.3
+    cooler:
+        build: ./cooler
+        networks:
+            intra:
+                ipv4_address: 172.26.0.4
+    cooler_db:
+        build: ./cooler_db
+        command: --default-authentication-plugin=mysql_native_password
+        restart: always
+        environment:
+          MYSQL_ROOT_PASSWORD: sodrkrrlrhksflwk12!@
+          MYSQL_DATABASE: cooler
+          MYSQL_USER: cooler
+          MYSQL_PASSWORD: sodrkrrl12!@
+        volumes:
+          - ./cooler_db/init.sql:/docker-entrypoint-initdb.d/init.sql
+        networks:
+            intra:
+                ipv4_address: 172.26.0.5
+    pipe:
+        build: ./pipe
+        networks:
+            intra:
+                ipv4_address: 172.26.0.6
+    pipe_db:
+        build: ./pipe_db
+        command: --default-authentication-plugin=mysql_native_password
+        restart: always
+        environment:
+          MYSQL_ROOT_PASSWORD: pipe_admin12!@
+          MYSQL_DATABASE: pipe
+          MYSQL_USER: pipe
+          MYSQL_PASSWORD: vkdlvm1357!#%&
+        volumes:
+          - ./pipe_db/init.sql:/docker-entrypoint-initdb.d/init.sql
+        networks:
+            intra:
+                ipv4_address: 172.26.0.7
+
+    atomic:
+      build: ./atomic
+      restart: always
+      networks:
+        intra:
+          ipv4_address: 172.26.0.8
+
+    atomic_db:
+      build: ./atomic_db
+      command: --default-authentication-plugin=mysql_native_password
+      restart: always
+      environment:
+        MYSQL_ROOT_PASSWORD: atomic_admin1@
+        MYSQL_DATABASE: atomic
+        MYSQL_USER: atomic
+        MYSQL_PASSWORD: dnjswkfur1@
+      volumes:
+        - ./atomic_db/init.sql:/docker-entrypoint-initdb.d/init.sql
+      networks:
+          intra:
+              ipv4_address: 172.26.0.9
+
+networks:
+  intra:
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.26.0.0/16
