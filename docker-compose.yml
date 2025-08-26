@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  db:
+    build:
+      context: ./db
+    restart: always
+    
+  safety_app:
+    build: ./server
+    container_name: safety_springboot_container
+    restart: always
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
