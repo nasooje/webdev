@@ -1,0 +1,57 @@
+version: '3.8'
+
+services:
+
+  frontend:
+    build: ./frontend
+    container_name: success_frontend
+    ports:
+      - "80:3000"
+    depends_on:
+      - backend
+    networks:
+      my_custom_network:
+        ipv4_address: 192.168.200.100
+
+  db:
+    build: ./db
+    container_name: success_db
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: success_stock
+      MYSQL_USER: success_user
+      MYSQL_PASSWORD: success_password
+      TZ: Asia/Seoul
+      MYSQL_CHARSET: utf8mb4
+      MYSQL_COLLATION: utf8mb4_unicode_ci
+    ports:
+      - "3306"
+    restart: always
+    networks:
+      my_custom_network:
+        ipv4_address: 192.168.200.120
+
+  backend:
+    build: ./backend
+    container_name: success_backend
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=mysql+pymysql://success_user:success_password@db:3306/success_stock?charset=utf8mb4
+      - SKIP_SEED=true
+      - SECRET_KEY=878bb7e219dda017ebbcf4d0605e5c12f74f13f74ad68e85ec47c9c1aa489ee2
+      - ALGORITHM=HS256
+      - ACCESS_TOKEN_EXPIRE_MINUTES=30
+    depends_on:
+      - db
+    restart: always
+    networks:
+      my_custom_network:
+        ipv4_address: 192.168.200.110
+
+networks:
+  my_custom_network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 192.168.200.0/24 
